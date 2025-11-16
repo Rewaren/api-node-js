@@ -30,6 +30,5 @@ test.describe('User management API', () => {
     test('delete user: should return 404 if user not found', async ({ request }) => {
 
     });
-//
 
 });
