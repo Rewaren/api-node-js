@@ -63,4 +63,27 @@ test.describe('User management API', () => {
         expect.soft(deleteAgainResponse.status()).toBe(StatusCodes.NOT_FOUND);
     });
 
+    test('get user ID information', async ({ request }) => {
+        const response1 = await request.post(`${baseURL}`);
+        const response2 = await request.post(`${baseURL}`);
+        const responseAllUsers = await request.get(`${baseURL}`);
+        const responseUsers = await responseAllUsers.json();
+
+        const numberOfObjects = responseUsers.length;
+        console.log('numberOfObject is ' + numberOfObjects);
+
+        let userIds: number[] = [];
+        for (let i = 0; i < numberOfObjects; i++) {
+            let userId = responseUsers[i].id;
+            userIds.push(userId);
+        }
+        console.log('userIds are: ' + userIds);
+
+        //delete userIds
+        for(let i =0; i < numberOfObjects; i++){
+            let response = await request.delete(`${baseURL}/${userIds[i]}`);
+            expect.soft(response.status()).toBe(StatusCodes.OK);
+        }
+    });
+
 });
