@@ -7,6 +7,32 @@ let baseURL: string = 'http://localhost:3000/users';
 
 test.describe('User management API', () => {
 
+    test.beforeEach('get and delete all existing users', async ({request}) => {
+        //get all users
+        const responseAllUsers = await request.get(`${baseURL}`);
+        const responseUsers = await responseAllUsers.json();
+
+        //get users' Ids
+        let userIds: number[] = [];
+        const numberOfObjects = responseUsers.length;
+        for (let i = 0; i < numberOfObjects; i++) {
+            let userId = responseUsers[i].id;
+            userIds.push(userId);
+        }
+
+        //delete all users by id
+        for(let i =0; i < numberOfObjects; i++){
+            let response = await request.delete(`${baseURL}/${userIds[i]}`);
+            expect.soft(response.status()).toBe(StatusCodes.OK);
+        }
+
+        //check all users are deleted
+        const response = await request.get(`${baseURL}`);
+        expect.soft(response.status()).toBe(StatusCodes.OK);
+        const responseBody = await response.text()
+        expect.soft(responseBody).toBe('[]');
+
+    })
 
     test('find user: should return a user by ID', async ({ request }) => {
         const createResponse = await request.post(`${baseURL}`);
